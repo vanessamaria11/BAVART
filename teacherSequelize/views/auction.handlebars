@@ -22,9 +22,9 @@
 							</div>
 						{{/each}}
 					</div>	
-        <input type="text" name="numPic" placeholder="# of picture" id="pictureNum">
-        <input type="text" name="bidAmount" placeholder="enter bid" id="bidPrice">
-        <button type="submit" id="submit">Submit</button>
+	        <input type="text" name="numPic" placeholder="# of picture" id="pictureNum">
+	        <input type="text" name="bidAmount" placeholder="enter bid" id="bidPrice">
+	        <button type="submit" id="submit">Submit</button>
          </div>
             </div> 
             <div class="formdiv">
@@ -111,8 +111,6 @@
 
 	  $.get("/api/checklog" + bidPost.getToken, function(data) {
 
-	  		// console.log(data.login);
-
 	  		if (data == null) {
 	  			$("#pleaseLog").modal('toggle');
 	  			return;
@@ -124,11 +122,11 @@
 	  			$("#pleaseLog").modal('toggle');
 	  			return;
 	  		}
-
 	  });
+
+	  //postBid checks the current bid and if its higher it will update it with the new amount
 	  function postBid() 
 	  {
-
 		  $.get("/api/getprice" + bidPost.pictureNum, function(data) {
 		  	var itemPrice = data.bidprice;
 		  	console.log(itemPrice);
@@ -141,14 +139,14 @@
 		  		
 		  		updateBid(bidPost);
 		  		// updateBid.reload(bidPost);
-
 		  	}
-
 		  });
 		}
 
 	});
 
+	//updateBid makes the post call to mysql db to update the bid and return the most 
+	//up to date items
 	function updateBid(data) {
 		var currentURL = window.location.origin;
 
@@ -158,25 +156,12 @@
 			$("#pictureNum").val("");
 			$("#bidPrice").val("");
 			$("#bidSuccess").modal('toggle');
-			console.log(result);
-			console.log(result[0].name);
-			console.log(result[0].bidprice);
 
 			getBidItems(result);
-			// for (var i = 1; i < result.length; i++) {
-			// 	$("#picId").html(result[i].id);
-			// 	$("#picName").html(result[i].name);
-			// 	$("#bidding").html(result[i].bidprice);
-			// 	$("#picBidder").html(result[i].UserId);
-			// }
-			// window.location.reload();
-			// getBidItems();
-			// location.reload(true);
 		});
 
 	}
-
-
+		//getBidItems dynamically sets the image and its content back to the DOM
 		function getBidItems(data) {
 
 			$("#wellSection").empty();
@@ -197,10 +182,6 @@
 			};
 		}
 
-	// function reload() {
-
-	// 	$("#bidding").load("auction");
-	// }
 	//function to set when the bid will end
 	function timer() {
 		// Set the date we're counting down to
@@ -232,11 +213,8 @@
 		    }
 		}, 1000);
 	}
-	// //initial functions are called to display artwork and bids to page
-	// getBidItems();
+
 	timer();
-
-
 
 	</script>
 </div>
