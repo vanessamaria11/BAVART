@@ -1,0 +1,286 @@
+<div class="container">
+  <br>
+  <br>
+  <h1>BAVART</h1>
+  <br>
+
+  <div id="registerForm" class="row">
+    <h2>Type your information below to register</h2>
+      <br>
+        <form class="create-update-form" action="/index" method="POST">
+        <div class="row">
+          <input type="text" class="registerInput" name="firstName" id="firstName" placeholder="Enter Your First Name">
+        </div>
+        <div class="row">
+          <input type="text" class="registerInput" name="lastName" id="lastName" placeholder="Enter Your Last name">
+        </div>
+        <div class="row">
+          <input type="text" class="registerInput" name="username" id="userName" placeholder="Create a Username">
+        </div>
+        <div class="row">
+          <input type="text" class="registerInput" name="email" id="email" placeholder="Enter Your Email">
+        </div>
+        <div class="row">
+          <input type="password" class="registerInput" name="password" id="password" placeholder="Create a Password">
+        </div>
+        <div class="row">
+          <div class="registerInput">
+            <button type="submit" id="submit" href="auction.html">Register</button>
+          </div>
+        </div>
+      </form>
+  </div>
+    <form class="create-update-form">
+      <div class="col-md-6 col-md-offset-3">
+        <input type="text" id="loginName" placeholder="enter username">
+        <br>
+        <input type="password" id="loginPass" placeholder="enter password">
+        <br>
+        <div class="centerAlign">
+          <button type="submit" class="btn btn-lg btn-primary" id="submitLogin">
+            <h4><span class="glyphicon glyphicon-list-alt"></span> Login</h4>
+          </button>
+        </div>
+      </div>
+    </form>
+  <div id="myModal" class="modal fade" role="dialog">
+      <div class="modal-dialog">
+        <!-- Modal content-->
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+            <h4 class="modal-title">Success</h4>
+          </div>
+          <div class="modal-body">
+            <p>Registration Successful!</p>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+          </div>
+        </div>
+      </div>
+  </div>
+
+<div id="loginModal" class="modal fade" role="dialog">
+      <div class="modal-dialog">
+        <!-- Modal content-->
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+            <h4 class="modal-title">Success</h4>
+          </div>
+          <div class="modal-body">
+            <p>Login Successful!</p>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+          </div>
+        </div>
+      </div>
+  </div>
+  <div id="alreadyLogged" class="modal fade" role="dialog">
+      <div class="modal-dialog">
+        <!-- Modal content-->
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+            <h4 class="modal-title">Logged</h4>
+          </div>
+          <div class="modal-body">
+            <p>You're already logged</p>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+          </div>
+        </div>
+      </div>
+  </div>
+  <div id="passIncorrect" class="modal fade" role="dialog">
+      <div class="modal-dialog">
+        <!-- Modal content-->
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+            <h4 class="modal-title">Error</h4>
+          </div>
+          <div class="modal-body">
+            <p>Password is incorrect</p>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+          </div>
+        </div>
+      </div>
+  </div>
+  <div id="userNotFound" class="modal fade" role="dialog">
+      <div class="modal-dialog">
+        <!-- Modal content-->
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+            <h4 class="modal-title">Error</h4>
+          </div>
+          <div class="modal-body">
+            <p>User is not found! Try again!</p>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+          </div>
+        </div>
+      </div>
+  </div>
+
+  <h3>Click <a href="/auction">here</a> start bidding</h3>
+
+  <footer id="registerFooter">
+    <div>
+      @Copyright Bobby Frazette, Abhaya Pawar, Vanessa Otto, &amp; Adam Zamojski
+    </div>
+  </footer>
+
+</div>
+
+<script type="text/javascript">
+  
+const currentURL = window.location.origin;
+// function to register user
+$("#submit").on("click", function(){
+
+   event.preventDefault();
+
+   console.log("submit sent");
+    var loginData = {
+      firstName: $("#firstName").val().trim(),
+      lastName: $("#lastName").val().trim(),
+      userName: $("#userName").val().trim(),
+      email: $("#email").val().trim(),
+      password: CryptoJS.MD5($("#password").val().trim()).toString()
+    }
+
+   console.log(loginData);
+
+   $.post(currentURL + "/api/user", loginData, function(data) {
+
+     $("#firstName").val("");
+      $("#lastName").val("");
+      $("#userName").val("");
+      $("#email").val("");
+      $("#password").val("");
+
+     console.log("we made it to post callback");
+      $("#myModal").modal('toggle');
+
+     });
+
+ });
+
+//function to login user
+$("#submitLogin").on("click", function(){
+
+   event.preventDefault();
+
+   var loginData = {
+      name: $("#loginName").val().trim(),
+      pass: $("#loginPass").val().trim()
+    }
+    console.log(loginData);
+
+   //get request to check if username is correct
+    $.get("/api/login" + loginData.name, function(data) {
+
+     console.log(data);
+      // if (data.login === true) {
+
+     //   $("#loginName").val("");
+      //   $("#loginPass").val("");
+      //   return alreadyLogged();
+      // }
+      $("#loginName").val("");
+      $("#loginPass").val("");
+
+     console.log(data);
+      if (data != null) {
+        console.log("we have data!");
+        checkPassword(data, loginData);
+      }
+      else {
+          $("#userNotFound").modal('toggle');
+          console.log("user not found");
+        }
+
+   });
+});
+
+ function checkPassword(data, loginData) {
+
+   console.log(data);
+    // console.log(data.password);
+    // console.log(loginData.pass);
+    var passCheck = CryptoJS.MD5(loginData.pass).toString();
+    console.log(passCheck);
+
+   if (data.password === passCheck) {
+
+     console.log("login successful");
+
+     localStorage.clear();
+      var ranNum = stringGen();
+      console.log(ranNum);
+      localStorage.setItem("token", ranNum);
+
+     var newData = {
+        name: data.userName,
+        token: ranNum
+      }
+      $.post(currentURL + "/api/login/tokenset", newData, function(data) {
+
+       console.log("token was updated");
+
+     });
+
+     loginOn(data);
+      $("#loginModal").modal('toggle');
+
+   }
+
+   else {
+      $("#passIncorrect").modal('toggle');
+      console.log("password incorrect");
+    }
+  }
+
+ function loginOn(data) {
+
+   if (data.login == false) {
+      data.login = true;
+    }
+
+   console.log(data.login);
+
+   $.post(currentURL + "/api/login/update", data, function(results) {
+
+     console.log("login set to true");
+
+   });
+
+ }
+  //function to check if user is already logged
+  function alreadyLogged(){
+    $("#alreadyLogged").modal('toggle');
+  }
+
+ //generates random string of characters
+  function stringGen() {
+    var text = " ";
+    
+   var charset = "abcdefghijklmnopqrstuvwxyz0123456789";
+    
+   for( var i=0; i < 50; i++ ) {
+        text += charset.charAt(Math.floor(Math.random() * charset.length));
+      }
+    
+   return text;
+  }
+
+
+</script>
