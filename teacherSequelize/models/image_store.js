@@ -17,14 +17,14 @@ module.exports = function(sequelize, Datatypes) {
             type: Datatypes.STRING
         },
         bidPrice: {
-        	type: Datatypes.INTEGER
+            type: Datatypes.INTEGER
         }
     },
         {
-		    // prevents pluralization of the table and prevents 'createdAt' and 'updatedAt' columns.
-		    freezeTableName: true,
-		    timestamps: false
-			  })
+            // prevents pluralization of the table and prevents 'createdAt' and 'updatedAt' columns.
+            freezeTableName: true,
+            timestamps: false
+              })
 
  //    );
     return Image_Store;
