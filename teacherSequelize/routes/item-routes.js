@@ -75,17 +75,21 @@ app.post("/api/bid", function(req, res){
                 }
             }).then(function(results) {
 
+              console.log("last console log before return");
             	console.log(results);
-  //           		db.image.findAll({}).then(function(images) {
-  //                 //  Promise.all(
-  //                 // console.log (results.get({plain:true}));
-  //                var imageArr=[];
-  //                for(var i = 0; i< images.length; i++){
-  //                	imageArr.push(images[i].get({plain:true}));
-  //                }
-		// 	// res.render("auction", {imageArr: imageArr})
-		// })
-                res.redirect("/auction");
+            		db.image.findAll({}).then(function(images) {
+                  //  Promise.all(
+                  // console.log (results.get({plain:true}));
+                 var imageArr=[];
+                 for(var i = 0; i< images.length; i++){
+                 	imageArr.push(images[i].get({plain:true}));
+                 }
+                 console.log("we made it to images return");
+                 console.log(images);
+                res.json(images);
+			// res.render("auction", {imageArr: imageArr})
+		        })
+
             })
 
      });

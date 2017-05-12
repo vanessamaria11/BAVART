@@ -1,14 +1,3 @@
-<!-- <!doctype html>
-<html lang="en-us">
-<head>
-	<title>BAVART AUCTION</title>
-	<meta charset="UTF-8">
-	<link rel="stylesheet" type="text/css" href="reset.css">
-	<link rel="stylesheet" type="text/css" href="style.css">
-	<link href="https://fonts.googleapis.com/css?family=Inknut+Antiqua|Petit+Formal+Script|Marck+Script" rel="stylesheet">
-	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
-</head>
-<body> -->
 <div class="bodyBackgroundDiv">
 </div>
 <div class="bodyDiv">
@@ -18,51 +7,30 @@
 		<br>
 		<h2>Choose an art piece below and place your bid</h2>
 		<br>
-
-	        {{!-- {{#each image}} --}}
-	            <div class="mainlistitem">
-	              <div class="items">
-	               <div>
-	                <img>
-	                {{!-- {{this.image_name}} --}}
-	                <div id="timeToExpire"></div>
-	                 <div id="wellSection">
-					{{#each imageArr}}
-					<div class="well">
-					<span>{{id}}</span>
-					<span>{{this.name}}</span>
+      <div class="mainlistitem">
+      <div class="items">
+       <div>
+        <div id="timeToExpire"></div>
+	        <div id="wellSection">
+						{{#each imageArr}}
+							<div class="well">
+							<span id="picId">{{id}}</span>
+							<span id="picName">{{name}}</span> <br>
 			        <span id="bidding">$ {{bidprice}}</span>
-			        <span> Highest bidder: {{this.User.userName}}</span>
-					<img src="/api/getimage/{{name}}" class="img-responsive"/>
-	{{!-- <span>{{this.}}</span> --}}
-					</div>
-					{{/each}}
+			        <span id="picBidder"> Highest bidder: {{this.User.userName}}</span>
+							<img src="/api/getimage/{{name}}" class="img-responsive"/>
+							</div>
+						{{/each}}
 					</div>	
-            {{!-- <div id="wellSection">
-	                	{{#each imageArr}}
-	                	<span>{{id}}</span>
-	                	<span>{{name}}</span>
-	                	<span>{{type}}</span>
-	                	<img src="/api/getimage/{{name}}"/>
-	                	{{!-- <span>{{this.}}</span>
-	                	{{!-- {{/each}}	 --}}             --{{!-- }}
-	                </div> --}} 
-	                <input type="text" name="numPic" placeholder="# of picture" id="pictureNum">
-	                <input type="text" name="bidAmount" placeholder="enter bid" id="bidPrice">
-	                <button type="submit" id="submit">Submit</button>
-	                </div>
-	              </div> 
-	              <div class="formdiv">
-	{{!--                   <form action="/index{{this.id}}?_method=PUT" method="POST" id="displayForm">
-	                    <input type="text" name="personName" placeholder="enter name">
-	                    <input type="hidden" name="devour" value="true">
-	                    <button type="submit" id="buttontag">Devour</button>
-	                  </form>
-	              </div> --}}
-	            </div>
-	            <br>
-	           </div>
-	        {{!-- {{/each}} --}}
+        <input type="text" name="numPic" placeholder="# of picture" id="pictureNum">
+        <input type="text" name="bidAmount" placeholder="enter bid" id="bidPrice">
+        <button type="submit" id="submit">Submit</button>
+         </div>
+            </div> 
+            <div class="formdiv">
+          </div>
+          <br>
+         </div>
 			<div id="priceLowModal" class="modal fade" role="dialog">
 	      <div class="modal-dialog">
 	        <!-- Modal content-->
@@ -181,17 +149,6 @@
 
 	});
 
-	function getBidItems() {
-
-		$.get("/auction", function(data) {
-
-				// $("#picName").html(data[0].image_name);
-				console.log(data);
-		});
-
-	};
-
-
 	function updateBid(data) {
 		var currentURL = window.location.origin;
 
@@ -201,16 +158,44 @@
 			$("#pictureNum").val("");
 			$("#bidPrice").val("");
 			$("#bidSuccess").modal('toggle');
-			// console.log(result);
-			console.log(result.name);
-			console.log(result.bidprice);
+			console.log(result);
+			console.log(result[0].name);
+			console.log(result[0].bidprice);
+
+			getBidItems(result);
+			// for (var i = 1; i < result.length; i++) {
+			// 	$("#picId").html(result[i].id);
+			// 	$("#picName").html(result[i].name);
+			// 	$("#bidding").html(result[i].bidprice);
+			// 	$("#picBidder").html(result[i].UserId);
+			// }
 			// window.location.reload();
 			// getBidItems();
 			// location.reload(true);
-
 		});
 
 	}
+
+
+		function getBidItems(data) {
+
+			$("#wellSection").empty();
+
+			for (var i = 0; i < data.length; i++) {
+				console.log("in the for loop");
+				console.log(data[0].image_name);
+				var wellSection = $('<div>');
+				wellSection.addClass("well");
+				wellSection.attr("id", "pictureWell-" + i);
+				$("#wellSection").append(wellSection);
+
+				$("#pictureWell-" +i).append("<span>" + data[i].id + "</span>:  ");
+				$("#pictureWell-" +i).append("<span>" + data[i].name + "</span> <br>");
+				$("#pictureWell-" +i).append("<span>$" + data[i].bidprice + "</span>");
+				$("#pictureWell-" +i).append("<img src= '/api/getimage/" + data[i].name + "' class=img-responsive></img>");
+
+			};
+		}
 
 	// function reload() {
 

@@ -37,7 +37,7 @@
       <form class="create-update-form">
         <input type="text" id="loginName" placeholder="Enter Username">
         <br>
-        <input type="text" id="loginPass" placeholder="Enter Password">
+        <input type="password" id="loginPass" placeholder="Enter Password">
         <br>
         <div class="centerAlign">
           <button type="submit" class="btn btn-lg btn-primary" id="submitLogin">
@@ -202,7 +202,7 @@ $("#submitLogin").on("click", function(){
 
    //get request to check if username is correct
     $.get("/api/login" + loginData.name, function(data) {
-      
+
       console.log(data);
       $("#loginName").val("");
       $("#loginPass").val("");
