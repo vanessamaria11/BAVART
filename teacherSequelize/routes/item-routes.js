@@ -47,7 +47,7 @@ module.exports = function(app) {
 				token: req.params.token
 			}
 		}).then(function(results) {
-			console.log(results.login);
+			// console.log(results.login);
   			res.json(results);
 		})
 	});

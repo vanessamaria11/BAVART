@@ -143,8 +143,12 @@
 
 	  $.get("/api/checklog" + bidPost.getToken, function(data) {
 
-	  		console.log(data.login);
+	  		// console.log(data.login);
 
+	  		if (data == null) {
+	  			$("#pleaseLog").modal('toggle');
+	  			return;
+	  		} 
 	  		if (data.login == true) {
 	  			postBid();
 	  		}
