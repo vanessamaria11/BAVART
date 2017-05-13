@@ -77,7 +77,7 @@ module.exports = function(app) {
                     imageArr.push(images[i].get({plain:true}));
                   }
                   console.log("we made it to images return");
-                  console.log(images);
+                  // console.log(images);
                   res.json(images);
                 }) //end db.image.findAll search
             })

@@ -50,11 +50,12 @@ app.get("/auction", function(req, res){
           db.image.findAll({ include: [db.User] }).then(function(images) {
             //  Promise.all(
             // console.log (results.get({plain:true}));
-            console.log()
             var imageArr=[];
             for(var i = 0; i< images.length; i++){
              imageArr.push(images[i].get({plain:true}));
             }
+            console.log("executing imageArr items");
+            console.log(imageArr);
             res.render("auction", {imageArr: imageArr})
           });
     }

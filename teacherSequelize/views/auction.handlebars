@@ -1,14 +1,3 @@
-<!-- <!doctype html>
-<html lang="en-us">
-<head>
-	<title>BAVART AUCTION</title>
-	<meta charset="UTF-8">
-	<link rel="stylesheet" type="text/css" href="reset.css">
-	<link rel="stylesheet" type="text/css" href="style.css">
-	<link href="https://fonts.googleapis.com/css?family=Inknut+Antiqua|Petit+Formal+Script|Marck+Script" rel="stylesheet">
-	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
-</head>
-<body> -->
 <div class="bodyBackgroundDiv">
 </div>
 <div class="bodyDiv">
@@ -18,51 +7,30 @@
 		<br>
 		<h2>Choose an art piece below and place your bid</h2>
 		<br>
-
-	        {{!-- {{#each image}} --}}
-	            <div class="mainlistitem">
-	              <div class="items">
-	               <div>
-	                <img>
-	                {{!-- {{this.image_name}} --}}
-	                <div id="timeToExpire"></div>
-	                 <div id="wellSection">
-					{{#each imageArr}}
-					<div class="well">
-					<span>{{id}}</span>
-					<span>{{this.name}}</span>
-			        <span id="bidding">$ {{bidprice}}</span>
-			        <span> Highest bidder: {{this.User.userName}}</span>
-					<img src="/api/getimage/{{name}}" class="img-responsive"/>
-	{{!-- <span>{{this.}}</span> --}}
-					</div>
-					{{/each}}
+      <div class="mainlistitem">
+      <div class="items">
+       <div>
+        <div id="timeToExpire"></div>
+	        <div id="wellSection">
+						{{#each imageArr}}
+							<div class="well">
+							<span id="picId">Item # {{id}}</span> <br>
+							<span id="picName">{{name}}</span> <br>
+			        <span id="bidding">$ {{bidprice}}</span> <br>
+			        <span id="picBidder"> Highest bidder: {{this.User.userName}}</span>
+							<img src="/api/getimage/{{name}}" class="img-responsive"/>
+							</div>
+						{{/each}}
 					</div>	
-            {{!-- <div id="wellSection">
-	                	{{#each imageArr}}
-	                	<span>{{id}}</span>
-	                	<span>{{name}}</span>
-	                	<span>{{type}}</span>
-	                	<img src="/api/getimage/{{name}}"/>
-	                	{{!-- <span>{{this.}}</span>
-	                	{{!-- {{/each}}	 --}}             --{{!-- }}
-	                </div> --}} 
-	                <input type="text" name="numPic" placeholder="# of picture" id="pictureNum">
-	                <input type="text" name="bidAmount" placeholder="enter bid" id="bidPrice">
-	                <button type="submit" id="submit">Submit</button>
-	                </div>
-	              </div> 
-	              <div class="formdiv">
-	{{!--                   <form action="/index{{this.id}}?_method=PUT" method="POST" id="displayForm">
-	                    <input type="text" name="personName" placeholder="enter name">
-	                    <input type="hidden" name="devour" value="true">
-	                    <button type="submit" id="buttontag">Devour</button>
-	                  </form>
-	              </div> --}}
-	            </div>
-	            <br>
-	           </div>
-	        {{!-- {{/each}} --}}
+	        <input type="text" name="numPic" placeholder="# of picture" id="pictureNum">
+	        <input type="text" name="bidAmount" placeholder="enter bid" id="bidPrice">
+	        <button type="submit" id="submit">Submit</button>
+         </div>
+            </div> 
+            <div class="formdiv">
+          </div>
+          <br>
+         </div>
 			<div id="priceLowModal" class="modal fade" role="dialog">
 	      <div class="modal-dialog">
 	        <!-- Modal content-->
@@ -114,7 +82,25 @@
 	        </div>
 	      </div>
 	  </div>
+	  <div id="nanmodal" class="modal fade" role="dialog">
+	      <div class="modal-dialog">
+	        <!-- Modal content-->
+	        <div class="modal-content">
+	          <div class="modal-header">
+	            <button type="button" class="close" data-dismiss="modal">&times;</button>
+	            <h4 class="modal-title">Error</h4>
+	          </div>
+	          <div class="modal-body">
+	            <p>You have to enter a correct value</p>
+	          </div>
+	          <div class="modal-footer">
+	            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+	          </div>
+	        </div>
+	      </div>
+	  </div>
 
+		<h3>Click <a href="/">here</a> go post your own art for sale</h3>
 		<h3>Click <a href="/home">here</a> go back to home</h3>
 
 		<footer id="auctionFooter">
@@ -123,16 +109,15 @@
 			</div>
 		</footer>
 	</div>
-	<!-- 
-	</body>
-	</html> -->
 
 	<script type="text/javascript">
 		
 	$("#submit").on("click", function(){
-
 	  var currentURL = window.location.origin;
-
+	  if ( isNaN($("#bidPrice").val().trim()) || $("#bidPrice").val().trim() == "" || isNaN($("#pictureNum").val().trim()) || $("#pictureNum").val().trim() == "") {
+	  	$("#nanmodal").modal('toggle');
+	  	return;
+	  }
 	  var bidPost = {
 	  	bidAmount: parseInt($("#bidPrice").val().trim()),
 	  	pictureNum: parseInt($("#pictureNum").val().trim()),
@@ -140,11 +125,12 @@
 	  }
 	  console.log(bidPost.getToken);
 	  console.log(bidPost.pictureNum);
-
-	  $.get("/api/checklog" + bidPost.getToken, function(data) {
-
-	  		console.log(data.login);
-
+	  //retrieves token from user db to determine who made the bid
+	  $.get("/auction/checklog" + bidPost.getToken, function(data) {
+	  		if (data == null) {
+	  			$("#pleaseLog").modal('toggle');
+	  			return;
+	  		} 
 	  		if (data.login == true) {
 	  			postBid();
 	  		}
@@ -152,15 +138,17 @@
 	  			$("#pleaseLog").modal('toggle');
 	  			return;
 	  		}
-
-	  });
+	  }); //ends /auctionchecklog request
+	  //postBid checks the current bid and if its higher it will update it with the new amount
 	  function postBid() 
 	  {
-
-		  $.get("/api/getprice" + bidPost.pictureNum, function(data) {
+		  $.get("/auction/getprice" + bidPost.pictureNum, function(data) {
+		  	if (data == null) {
+		  		$("#nanmodal").modal('toggle');
+		  		return;
+		  	}
 		  	var itemPrice = data.bidprice;
 		  	console.log(itemPrice);
-
 		  	if (itemPrice >= bidPost.bidAmount) {
 		  		$("#priceLowModal").modal('toggle');
 		  		return;
@@ -169,57 +157,76 @@
 		  		
 		  		updateBid(bidPost);
 		  		// updateBid.reload(bidPost);
-
 		  	}
-
-		  });
-		}
-
-	});
-
-	function getBidItems() {
-
-		$.get("/auction", function(data) {
-
-				// $("#picName").html(data[0].image_name);
-				console.log(data);
-		});
-
-	};
-
-
-	function updateBid(data) {
+		  }); //ends /auction/getprice request
+		} //ends function postBid
+	}); //#submint callback
+	//updateBid makes the post call to mysql db to update the bid and return the most 
+	//up to date items
+	function updateBid(data) 
+	{
 		var currentURL = window.location.origin;
-
-		// console.log(data.bidAmount);
-		$.post(currentURL + "/api/bid", data, function(result) {	
-
+		//post request to image db to update the current bid for the picture
+		$.post(currentURL + "/auction/bid", data, function(result) {	
 			$("#pictureNum").val("");
 			$("#bidPrice").val("");
 			$("#bidSuccess").modal('toggle');
-			// console.log(result);
-			console.log(result.name);
-			console.log(result.bidprice);
-			// window.location.reload();
-			// getBidItems();
-			// location.reload(true);
-
-		});
-
+			// console.log(result[0].UserId);
+			console.log(result);
+			console.log(result.length);
+			// console.log(nameArray);
+			var nameArray = [];
+				var i = 0;
+				var stopLoop = result.length;
+			function putInArray() {
+				if (result[i].UserId != null) {
+				// get request to find user name that have the current highest bid
+				$.get("/api/usercheck" + result[i].UserId).then(function(data){
+						i += 1;
+						stopLoop = stopLoop - 1;
+							nameArray.push(data.userName);
+						if (stopLoop <= 0) {
+								console.log("usercheck ended!");
+								getBidItems(result, nameArray);
+								return;
+						}
+							putInArray();
+					})
+				}
+				else {
+					i += 1;
+					stopLoop = stopLoop - 1;
+					nameArray.push("No bidder Yet");
+					putInArray();
+				}
+			}
+				putInArray();
+				console.log(nameArray);
+		})
 	}
-
-	// function reload() {
-
-	// 	$("#bidding").load("auction");
-	// }
+		//getBidItems dynamically sets the image and its content back to the DOM
+		function getBidItems(data, nameArray) {
+			$("#wellSection").empty();
+			for (var i = 0; i < data.length; i++) {
+				var cutName = data[i].name.split(".");
+				var finalCut = cutName[0];
+				var wellSection = $('<div>');
+				wellSection.addClass("well");
+				wellSection.attr("id", "pictureWell-" + i);
+				$("#wellSection").append(wellSection);
+				$("#pictureWell-" +i).append("<span id=picId> Item # " + data[i].id + "</span><br>");
+				$("#pictureWell-" +i).append("<span id=picName>" + finalCut + "</span><br>");
+				$("#pictureWell-" +i).append("<span id=bidding>$ " + data[i].bidprice + "</span><br>");
+				$("#pictureWell-" +i).append("<span id=picBidder>Highest bidder: " + nameArray[i] + "</span>");
+				$("#pictureWell-" +i).append("<img src= '/api/getimage/" + data[i].name + "' class=img-responsive></img>");
+			};
+		}
 	//function to set when the bid will end
 	function timer() {
 		// Set the date we're counting down to
 	var countDownDate = new Date("May 15, 2017 00:00:00").getTime();
-
 		// Update the count down every 1 second
 		var x = setInterval(function() {
-
 		    // Get todays date and time
 		    var now = new Date().getTime();
 		    
@@ -243,11 +250,6 @@
 		    }
 		}, 1000);
 	}
-	// //initial functions are called to display artwork and bids to page
-	// getBidItems();
 	timer();
-
-
-
 	</script>
 </div>
