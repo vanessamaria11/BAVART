@@ -1,26 +1,36 @@
-<h1>BAVART Images</h1>
-
-<form method="post" action="api/image" id="image-form" enctype="multipart/form-data">
-	<input type="file" name="photos" size="200" multiple><br>
-	<div id="giphInfo">
-    <div class="single-img">
-    </div>
-    </div>
-	<button type="submit" name="submit" value="submit">Submit</button>
-	<img src="" width="40%" height="50%" alt="Image preview..."><br>
-</form>
-<div class = "imageplace">
-  </div>
-<form method="get" action="api/getimage" id="image-display">
-  <button type="submit" name="submit" value="submit">ShowImage</button>
-</form>
+<div class="bodyBackgroundDiv">
 </div>
-
-{{#each imageArr}}
-<img src="/api/getimage/{{name}}"/>
-{{/each}}
-
-
+<div class="bodyDiv">
+  <br>
+  <h1>BAVART Images</h1>
+  <br>
+  <div class="col-xs-3"></div>
+  <div class="row">
+    <form method="post" action="api/image" id="image-form" enctype="multipart/form-data">
+        <input type="file" name="photos" size="200" multiple><br>
+        <div id="giphInfo">
+        <div class="single-img">
+        </div>
+      </div>
+      <div class="col-xs-3"></div>
+        <button type="submit" name="submit" value="submit">Submit</button>
+    </form>
+  </div>
+  <div class = "imageplace">
+  </div>
+  <div class="col-xs-3"></div>
+  <br>
+  {{#each imageArr}}
+  <img src="/api/getimage/{{name}}"/>
+  {{/each}}
+  <h3>Click <a href="/auction">here</a> return to the auction page</h3>
+  <h3>Click <a href="/home">here</a> to return to the home page</h3>
+  <footer id="indexFooter">
+    <div>
+      @Copyright Bobby Frazette, Abhaya Pawar, Vanessa Otto, &amp; Adam Zamojski
+    </div>
+  </footer>
+</div>
 <script>
   var imageHolder = ("<div class='images'>")
    function previewFile(){
@@ -29,11 +39,9 @@
        for 
        var file    = document.querySelector('input[type=file]')
        var reader  = new FileReader();
-
        reader.onloadend = function () {
            preview.src = reader.result;
        }
-
        if (file) {
            reader.readAsDataURL(file); //reads the data as a URL
            // imageHolder.append(file);
@@ -43,11 +51,10 @@
        }
   }
 $('#image-form button').on("click", function(event){
-	event.preventDefault();
-  	previewFile(); 
-	console.log($('#image-form').serializeArray());
+    event.preventDefault();
+    previewFile(); 
+    console.log($('#image-form').serializeArray());
  });
-
 $('#image-display button').on("click", function(imageRecord){
   event.preventDefault();
       var simple = imageRecord.get({plain:true});
@@ -58,8 +65,5 @@ $('#image-display button').on("click", function(imageRecord){
         res.end(imageData, 'binary');
  });
  
-	// var imageArray = [];
-
-
+    // var imageArray = [];
 </script>
-
