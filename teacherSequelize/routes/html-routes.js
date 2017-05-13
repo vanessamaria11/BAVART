@@ -12,7 +12,7 @@ module.exports = function(app) {
 
 	// index route loads view.html
 
-app.get("/", function(req, res){(
+app.get("/", function(req, res){
 
 	db.image.findAll({}).then(function(images) {
                   //  Promise.all(
@@ -24,21 +24,44 @@ app.get("/", function(req, res){(
 			res.render("index")
 		})
 
-)});
+});
 
-app.get("/auction", function(req, res){(
+//route for auction page loads images if users or images don't exist in db
+app.get("/auction", function(req, res){
 
-	db.image.findAll({ include: [db.User] }).then(function(images) {
-                  //  Promise.all(
-                  // console.log (results.get({plain:true}));
-                 var imageArr=[];
-                 for(var i = 0; i< images.length; i++){
-                 	imageArr.push(images[i].get({plain:true}));
-                 }
-			res.render("auction", {imageArr: imageArr})
-		})
+  db.User.findAll({}).then(function(results) {
+    // res.json(results);
 
-)});
+    if (results == null) {
+          db.image.findAll({}).then(function(images) {
+            //  Promise.all(
+            // console.log (results.get({plain:true}));
+            if (images == null) {
+              res.render("auction");
+            }
+           var imageArr=[];
+           for(var i = 0; i< images.length; i++){
+            imageArr.push(images[i].get({plain:true}));
+           }
+          res.render("auction", {imageArr: imageArr})
+          });
+    }
+    else {
+          db.image.findAll({ include: [db.User] }).then(function(images) {
+            //  Promise.all(
+            // console.log (results.get({plain:true}));
+            var imageArr=[];
+            for(var i = 0; i< images.length; i++){
+             imageArr.push(images[i].get({plain:true}));
+            }
+            console.log("executing imageArr items");
+            console.log(imageArr);
+            res.render("auction", {imageArr: imageArr})
+          });
+    }
+  });
+
+});
 
   app.get("/register", function(req, res) {
 

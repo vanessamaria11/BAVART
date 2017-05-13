@@ -68,4 +68,19 @@ module.exports = function(app) {
 
   });
 
+  app.get("/api/usercheck:id", function(req, res) {
+
+    console.log("what is this id number");
+    console.log(req.params.id);
+     db.User.findOne({
+          where: {
+            id: req.params.id
+          }
+      }).then(function(results) {
+
+          res.json(results);
+     });
+
+  });
+
 }

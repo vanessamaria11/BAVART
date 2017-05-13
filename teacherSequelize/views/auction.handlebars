@@ -14,9 +14,9 @@
 	        <div id="wellSection">
 						{{#each imageArr}}
 							<div class="well">
-							<span id="picId">{{id}}</span>
+							<span id="picId">Item # {{id}}</span> <br>
 							<span id="picName">{{name}}</span> <br>
-			        <span id="bidding">$ {{bidprice}}</span>
+			        <span id="bidding">$ {{bidprice}}</span> <br>
 			        <span id="picBidder"> Highest bidder: {{this.User.userName}}</span>
 							<img src="/api/getimage/{{name}}" class="img-responsive"/>
 							</div>
@@ -82,7 +82,25 @@
 	        </div>
 	      </div>
 	  </div>
+	  <div id="nanmodal" class="modal fade" role="dialog">
+	      <div class="modal-dialog">
+	        <!-- Modal content-->
+	        <div class="modal-content">
+	          <div class="modal-header">
+	            <button type="button" class="close" data-dismiss="modal">&times;</button>
+	            <h4 class="modal-title">Error</h4>
+	          </div>
+	          <div class="modal-body">
+	            <p>You have to enter a correct value</p>
+	          </div>
+	          <div class="modal-footer">
+	            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+	          </div>
+	        </div>
+	      </div>
+	  </div>
 
+		<h3>Click <a href="/">here</a> go post your own art for sale</h3>
 		<h3>Click <a href="/home">here</a> go back to home</h3>
 
 		<footer id="auctionFooter">
@@ -91,9 +109,6 @@
 			</div>
 		</footer>
 	</div>
-	<!-- 
-	</body>
-	</html> -->
 
 	<script type="text/javascript">
 		
@@ -101,15 +116,22 @@
 
 	  var currentURL = window.location.origin;
 
+	  if ( isNaN($("#bidPrice").val().trim()) || $("#bidPrice").val().trim() == "" || isNaN($("#pictureNum").val().trim()) || $("#pictureNum").val().trim() == "") {
+	  	$("#nanmodal").modal('toggle');
+	  	return;
+	  }
+
 	  var bidPost = {
 	  	bidAmount: parseInt($("#bidPrice").val().trim()),
 	  	pictureNum: parseInt($("#pictureNum").val().trim()),
 	  	getToken: localStorage.getItem("token")
 	  }
+
 	  console.log(bidPost.getToken);
 	  console.log(bidPost.pictureNum);
 
-	  $.get("/api/checklog" + bidPost.getToken, function(data) {
+	  //retrieves token from user db to determine who made the bid
+	  $.get("/auction/checklog" + bidPost.getToken, function(data) {
 
 	  		if (data == null) {
 	  			$("#pleaseLog").modal('toggle');
@@ -122,12 +144,17 @@
 	  			$("#pleaseLog").modal('toggle');
 	  			return;
 	  		}
-	  });
+	  }); //ends /auctionchecklog request
 
 	  //postBid checks the current bid and if its higher it will update it with the new amount
 	  function postBid() 
 	  {
-		  $.get("/api/getprice" + bidPost.pictureNum, function(data) {
+		  $.get("/auction/getprice" + bidPost.pictureNum, function(data) {
+
+		  	if (data == null) {
+		  		$("#nanmodal").modal('toggle');
+		  		return;
+		  	}
 		  	var itemPrice = data.bidprice;
 		  	console.log(itemPrice);
 
@@ -140,43 +167,80 @@
 		  		updateBid(bidPost);
 		  		// updateBid.reload(bidPost);
 		  	}
-		  });
-		}
+		  }); //ends /auction/getprice request
+		} //ends function postBid
 
-	});
+	}); //#submint callback
 
 	//updateBid makes the post call to mysql db to update the bid and return the most 
 	//up to date items
-	function updateBid(data) {
+	function updateBid(data) 
+	{
 		var currentURL = window.location.origin;
 
-		// console.log(data.bidAmount);
-		$.post(currentURL + "/api/bid", data, function(result) {	
+		//post request to image db to update the current bid for the picture
+		$.post(currentURL + "/auction/bid", data, function(result) {	
 
 			$("#pictureNum").val("");
 			$("#bidPrice").val("");
 			$("#bidSuccess").modal('toggle');
+			// console.log(result[0].UserId);
+			console.log(result);
+			console.log(result.length);
+			// console.log(nameArray);
 
-			getBidItems(result);
-		});
+			var nameArray = [];
+				var i = 0;
+				var stopLoop = result.length;
+			function putInArray() {
+
+				if (result[i].UserId != null) {
+				// get request to find user name that have the current highest bid
+				$.get("/api/usercheck" + result[i].UserId).then(function(data){
+						i += 1;
+						stopLoop = stopLoop - 1;
+
+							nameArray.push(data.userName);
+
+						if (stopLoop <= 0) {
+								console.log("usercheck ended!");
+								getBidItems(result, nameArray);
+								return;
+						}
+							putInArray();
+					})
+				}
+				else {
+					i += 1;
+					stopLoop = stopLoop - 1;
+					nameArray.push("No bidder Yet");
+					putInArray();
+				}
+			}
+				putInArray();
+				console.log(nameArray);
+		})
 
 	}
 		//getBidItems dynamically sets the image and its content back to the DOM
-		function getBidItems(data) {
+		function getBidItems(data, nameArray) {
 
 			$("#wellSection").empty();
 
 			for (var i = 0; i < data.length; i++) {
-				console.log("in the for loop");
-				console.log(data[0].image_name);
+
+				var cutName = data[i].name.split(".");
+				var finalCut = cutName[0];
+
 				var wellSection = $('<div>');
 				wellSection.addClass("well");
 				wellSection.attr("id", "pictureWell-" + i);
 				$("#wellSection").append(wellSection);
 
-				$("#pictureWell-" +i).append("<span>" + data[i].id + "</span>:  ");
-				$("#pictureWell-" +i).append("<span>" + data[i].name + "</span> <br>");
-				$("#pictureWell-" +i).append("<span>$" + data[i].bidprice + "</span>");
+				$("#pictureWell-" +i).append("<span id=picId> Item # " + data[i].id + "</span><br>");
+				$("#pictureWell-" +i).append("<span id=picName>" + finalCut + "</span><br>");
+				$("#pictureWell-" +i).append("<span id=bidding>$ " + data[i].bidprice + "</span><br>");
+				$("#pictureWell-" +i).append("<span id=picBidder>Highest bidder: " + nameArray[i] + "</span>");
 				$("#pictureWell-" +i).append("<img src= '/api/getimage/" + data[i].name + "' class=img-responsive></img>");
 
 			};

@@ -159,6 +159,7 @@
 <script type="text/javascript">
   
 const currentURL = window.location.origin;
+
 // function to register user
 $("#submit").on("click", function() {
    event.preventDefault();
@@ -174,6 +175,7 @@ $("#submit").on("click", function() {
    //checks if user filled out information
    if (loginData.firstName == "" || loginData.lastName == ""|| loginData.userName == ""|| loginData.email == ""|| loginData.password == "") {
 
+      clearFields();
       $("#emptyModal").modal('toggle');
       return;
     }
@@ -181,16 +183,14 @@ $("#submit").on("click", function() {
     //if information is filled, make a post to the database and empty fields on page
     else {
      $.post(currentURL + "/api/user", loginData, function(data) {
-       $("#firstName").val("");
-        $("#lastName").val("");
-        $("#userName").val("");
-        $("#email").val("");
-        $("#password").val("");
-       console.log("we made it to post callback");
+        
+        clearFields();
+        console.log("we made it to post callback");
         $("#myModal").modal('toggle');
        });
     }
  });
+
 //function to login user
 $("#submitLogin").on("click", function(){
    event.preventDefault();
@@ -199,6 +199,12 @@ $("#submitLogin").on("click", function(){
       pass: $("#loginPass").val().trim()
     }
     console.log(loginData);
+
+    //check to see if login data is empty
+    if (loginData.name == "" || loginData.pass == "") {
+      $("#emptyModal").modal('toggle');
+      return;
+    }
 
    //get request to check if username is correct
     $.get("/api/login" + loginData.name, function(data) {
@@ -217,7 +223,8 @@ $("#submitLogin").on("click", function(){
       }
    });
 });
-  //if username is found then check if the password is correct
+
+//if username is found then check if the password is correct
 function checkPassword(data, loginData) {
    console.log(data);
     var passCheck = CryptoJS.MD5(loginData.pass).toString();
@@ -261,6 +268,19 @@ function loginOn(data) {
      console.log("login set to true");
   });
 }
+
+//function to clear input fields
+function clearFields() {
+
+    $("#firstName").val("");
+    $("#lastName").val("");
+    $("#userName").val("");
+    $("#email").val("");
+    $("#password").val("");
+    $("#loginName").val("");
+    $("#loginPass").val("");
+}
+
 //function to check if user is already logged
 function alreadyLogged(){
     $("#alreadyLogged").modal('toggle');
